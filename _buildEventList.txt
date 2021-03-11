@@ -1,0 +1,86 @@
+ _buildEventList() {
+    return ListView(
+        children: _selectedEvents
+            .map((event) => Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1.1, color: Color(0xFFF5F5F5)),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3.0),
+                  child: ListTile(
+                      title: Row(children: <Widget>[
+                        // Event color
+                        Container(
+                            // 이벤트 색상 변경 버튼(태그 대용)
+                            child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              padding: (EdgeInsets.symmetric(
+                                  horizontal: deviceWidth * 0.03,
+                                  vertical: deviceHeight * 0.028)),
+                              shape: new CircleBorder(),
+                              primary: Color(0xFFFFFFFF),
+                              onPrimary: Color(0xFF111111)),
+                          onPressed: () {
+                            setState(() {
+                              //이벤트 세부내용 확정시키기
+                            });
+                          },
+                          child: Text(
+                            'Event tag',
+                            style: TextStyle(fontSize: deviceWidth * 0.02),
+                          ),
+                        )),
+                        Spacer(),
+                        // Event name
+                        Column(
+                          children: <Widget>[
+                            Container(
+                                child: Text(
+                              event.toString(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: deviceWidth * 0.04),
+                            )),
+                            Container(
+                                child: Text(
+                              'Description Below',
+                              style: TextStyle(
+                                  color: Color(0x8FFFFFFF),
+                                  fontSize: deviceWidth * 0.035),
+                            )),
+                            Container(
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                    child: Text(
+                                      '${DateTime.now().month}/${DateTime.now().day} ',
+                                      style: TextStyle(
+                                          color: Color(0xFF6FFFFF),
+                                          fontSize: deviceWidth * 0.028),
+                                    ),
+                                  ),
+                                  Container(
+                                      child:
+                                          Text('  ')), //need replace to spacer
+                                  Container(
+                                      child: Text(
+                                    //일정 시간
+                                    '10-11 PM',
+                                    style: TextStyle(
+                                        color: Color(0xFF6FFFFF),
+                                        fontSize: deviceWidth * 0.028),
+                                  )),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        Spacer(
+                          flex: 6,
+                        ),
+                      ]),
+                      onTap: () {}),
+                ))
+            .toList());
+  }
