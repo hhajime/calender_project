@@ -63,9 +63,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  Map<DateTime, List> _events;
-  Map<DateTime, List> _2;
-  Map<DateTime, Map> _1;
+  Map<DateTime, List> _event; // contain dayTime => KEY and _contents => VALUE
+  Map<DateTime, List> _contents; // contain event content(current daytime => KEY
+  // title,detail,category,selected time,tag color) => VALUE
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
@@ -135,9 +135,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // 초기 상태_ 비어있게 -> 추후 저장된 캘린더 내용으로 설정
     super.initState();
     final _selectedDay = DateTime.now();
-    _events = {};
-
-    _selectedEvents = _events[_selectedDay] ?? [];
+    _contents = {};
+    _event = {};
+    _selectedEvents = _event[_selectedDay] ?? [];
     _calendarController = CalendarController();
 
     _animationController = AnimationController(
@@ -159,12 +159,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final day = _calendarController.selectedDay;
     final title = titleTextController.text;
     final details = contentTextController.text;
-
+    final now = DateTime.now();
     setState(() {
-      _events.update(day, (existingEvents) => existingEvents..add(title),
+      _contents.update(now, (contents) => contents..add(title),
           ifAbsent: () => [title]);
-      _events.update(day, (existingEvents) => existingEvents..add(details),
+      print(title);
+      _contents.update(now, (contents) => contents..add(details),
           ifAbsent: () => [details]);
+      _event.update(day, (existingEvents) => existingEvents..add(_contents),
+          ifAbsent: () => [_contents]);
     }); // title(textcontroller)-> _events List 입력 -> eventlist builder에 의해 출력
   }
 
@@ -277,7 +280,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   _buildTableCalendar() {
     return TableCalendar(
       calendarController: _calendarController,
-      events: _events,
+      events: _event,
       holidays: _holidays,
       startingDayOfWeek: StartingDayOfWeek.sunday,
       calendarStyle: CalendarStyle(
@@ -336,7 +339,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   background: Container(color: Color(0xFF33a9b2)),
                   onDismissed: (direction) {
                     final day = _calendarController.selectedDay;
-                    _events.update(
+                    _event.update(
                         day, (existingEvents) => existingEvents..remove(event));
                     setState(() {});
                   },
@@ -377,14 +380,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               children: <Widget>[
                                 Container(
                                     child: Text(
-                                  event.toString(),
+                                  '${_contents.values.toList()}',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: deviceWidth * 0.04),
                                 )),
                                 Container(
                                     child: Text(
-                                  event.toString(), //titlecontroller이용, 설정
+                                  contentTextController
+                                      .text, //titlecontroller이용, 설정
                                   style: TextStyle(
                                       color: Color(0x8FFFFFFF),
                                       fontSize: deviceWidth * 0.035),
