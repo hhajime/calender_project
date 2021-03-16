@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,10 +65,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  Map<DateTime, List> _event; // contain dayTime => KEY and _contents => VALUE
-  Map<DateTime, List> _contents; // contain event content(current daytime => KEY
-  // title,detail,category,selected time,tag color) => VALUE
-  List _selectedEvents;
+  Map<DateTime, List> _event; // contain dayTime => KEY
+  //and title,detail,category,selected time,tag color) => VALUE
+  List _selectedDays;
   AnimationController _animationController;
   CalendarController _calendarController;
   PageController _pages = PageController(initialPage: 0);
@@ -76,6 +77,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   int weatherCode;
   IconData iconData = Icons.refresh;
   double celsious;
+  String title;
+  String details;
+  DateTime now = DateTime.now();
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+  List content = [];
 
   /// Determine the current position of the device.
   ///
@@ -135,9 +141,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // 초기 상태_ 비어있게 -> 추후 저장된 캘린더 내용으로 설정
     super.initState();
     final _selectedDay = DateTime.now();
-    _contents = {};
     _event = {};
-    _selectedEvents = _event[_selectedDay] ?? [];
+    _selectedDays = _event[_selectedDay] ?? [];
+    content = [];
     _calendarController = CalendarController();
 
     _animationController = AnimationController(
@@ -150,6 +156,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _animationController.dispose();
     _calendarController.dispose();
     super.dispose();
   }
@@ -157,24 +164,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void _addEvents() {
     // 캘린더에 추가
     final day = _calendarController.selectedDay;
-    final title = titleTextController.text;
-    final details = contentTextController.text;
-    final now = DateTime.now();
+    final dayStr = _calendarController.selectedDay.toString();
+    title = titleTextController.text;
+    details = contentTextController.text;
+    List contento = [];
     setState(() {
-      _contents.update(now, (contents) => contents..add(title),
-          ifAbsent: () => [title]);
-      print(title);
-      _contents.update(now, (contents) => contents..add(details),
-          ifAbsent: () => [details]);
-      _event.update(day, (existingEvents) => existingEvents..add(_contents),
-          ifAbsent: () => [_contents]);
+      contento.add(title);
+      contento.add(details);
+      _event.update(day, (contents) => contents..add(contento),
+          ifAbsent: () => [contento]);
+      _buildEventList();
     }); // title(textcontroller)-> _events List 입력 -> eventlist builder에 의해 출력
   }
 
   void _onDaySelected(DateTime day, List events, List holidays) {
     print('CALLBACK: _onDaySelected is $day');
+    print('event : $_selectedDays');
     setState(() {
-      _selectedEvents = events;
+      _selectedDays = events;
       eventDate = day;
     });
   }
@@ -333,14 +340,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return ListView(
         padding: const EdgeInsets.only(
             top: 0.0, bottom: 50.0, left: 0.0, right: 0.0),
-        children: _selectedEvents
-            .map((event) => Dismissible(
+        children: _selectedDays
+            .map((events) => Dismissible(
                   key: UniqueKey(),
                   background: Container(color: Color(0xFF33a9b2)),
                   onDismissed: (direction) {
                     final day = _calendarController.selectedDay;
-                    _event.update(
-                        day, (existingEvents) => existingEvents..remove(event));
+                    _event.update(day,
+                        (existingEvents) => existingEvents..remove(content));
+                    _selectedDays.remove(events);
                     setState(() {});
                   },
                   child: Container(
@@ -380,15 +388,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               children: <Widget>[
                                 Container(
                                     child: Text(
-                                  '${_contents.values.toList()}',
+                                  events.elementAt(0).toString(), // 여기 수정!!
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: deviceWidth * 0.04),
                                 )),
                                 Container(
                                     child: Text(
-                                  contentTextController
-                                      .text, //titlecontroller이용, 설정
+                                  events.elementAt(1).toString(), // 여기 수정!!
                                   style: TextStyle(
                                       color: Color(0x8FFFFFFF),
                                       fontSize: deviceWidth * 0.035),
@@ -398,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                     children: <Widget>[
                                       Container(
                                         child: Text(
-                                          '${DateTime.now().month}/${DateTime.now().day} ',
+                                          '${eventDate.month}/${eventDate.day} ',
                                           style: TextStyle(
                                               color: Color(0xFF6FFFFF),
                                               fontSize: deviceWidth * 0.028),
@@ -965,6 +972,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         content: content,
         eventdate: nowDate); //nowDate->selecteddate
     bloc.addEvents(eventDB);
+  }
+
+  void getkey() {
+    var a = 0;
+    if (_event.keys.contains(_calendarController.selectedDay)) {
+      print('${_event.values}');
+    }
   }
 }
 
