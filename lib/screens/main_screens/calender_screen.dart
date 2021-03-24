@@ -76,7 +76,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Weather w; // 같은 클래스 내 다른 메소드 안의 변수를 불러오기 위해 미리 선언
   int weatherCode;
   IconData iconData = Icons.refresh;
-  double celsious;
+  double celsious = 0;
+  String area = 'City';
   String title;
   String details;
   DateTime now = DateTime.now();
@@ -125,15 +126,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     double lon = position.longitude;
     w = await wf.currentWeatherByLocation(
         lat, lon); // get weather by geolocator
-    if (celsious != null) {
+    if (celsious == null) {
       celsious = 0;
     } else {
       celsious = w.temperature.celsius;
     }
+    if (w.areaName == null) {
+      area = 'City';
+    } else {
+      area = w.areaName;
+    }
     double kelvin = w.temperature.kelvin;
     weatherCode = w.weatherConditionCode;
     print(
-        'in ${w.areaName}, weather is ${w.weatherDescription}, $weatherCode and temperature is ${celsious}');
+        'in $area, weather is ${w.weatherDescription}, $weatherCode and temperature is $celsious');
   }
 
   @override
@@ -248,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           ),
                           Container(
                             child: Text(
-                              '$celsious ℃',
+                              'in $area, ${celsious.toStringAsFixed(2)} ℃',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
