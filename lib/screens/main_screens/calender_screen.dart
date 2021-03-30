@@ -80,6 +80,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   String area = 'City';
   String title;
   String details;
+  String startTime;
+  String endTime;
   DateTime now = DateTime.now();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
   List content = [];
@@ -173,10 +175,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     final dayStr = _calendarController.selectedDay.toString();
     title = titleTextController.text;
     details = contentTextController.text;
+    startTime = strt;
+    endTime = edd;
+
     List contento = [];
     setState(() {
       contento.add(title);
       contento.add(details);
+      contento.add(startTime);
+      contento.add(endTime);
       _event.update(day, (contents) => contents..add(contento),
           ifAbsent: () => [contento]);
       _buildEventList();
@@ -423,7 +430,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       Container(
                                           child: Text(
                                         //일정 시간
-                                        '$strt - $edd',
+                                        '${events.elementAt(2).toString()} - ${events.elementAt(3).toString()}',
                                         style: TextStyle(
                                             color: Color(0xFF6FFFFF),
                                             fontSize: deviceWidth * 0.028),
@@ -616,7 +623,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildBottomSheet(BuildContext context) {
-    final _valueList = ['first', 'second', 'third'];
+    final _valueList = ['first', 'second', 'third']; // 유저가 추가 할수 있게 수정
     var _selectedValue = 'first';
     return SingleChildScrollView(
         reverse: true,
@@ -821,9 +828,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   );
                                 },
                               ).toList(),
-                              onChanged: (value) {
+                              onChanged: (String newValue) {
                                 setState(() {
-                                  _selectedValue = value;
+                                  _selectedValue = newValue;
                                 });
                               },
                             ),
