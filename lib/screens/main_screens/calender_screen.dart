@@ -240,7 +240,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 children: [
                   _buildTableCalendar(),
                   Positioned(
-                      bottom: 330,
+                      bottom: 300,
+                      top: 1,
                       right: 20,
                       child: Column(
                         children: [
