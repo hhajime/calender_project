@@ -186,6 +186,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       contento.add(endTime);
       _event.update(day, (contents) => contents..add(contento),
           ifAbsent: () => [contento]);
+      print('hello');
+      print(_event.keys); //contento list 담긴 id(date)값 필요
       _buildEventList();
     }); // title(textcontroller)-> _events List 입력 -> eventlist builder에 의해 출력
   }
