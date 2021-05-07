@@ -13,7 +13,6 @@ import 'package:weather/weather.dart'; //android X support 확인(pub참고)
 import 'package:familia/data/eventDB.dart';
 import 'package:familia/bloc/calender_bloc.dart';
 import 'package:intl/intl.dart';
-
 import 'package:familia/screens/main_screens/scheduler_screen.dart';
 
 // Example holidays
